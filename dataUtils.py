@@ -23,7 +23,7 @@ import random
 import tensorflow as tf
 
 WORKCLASS = ["Private", "Self-emp-not-inc", "Self-emp-inc", "Federal-gov", "Local-gov", "State-gov", "Without-pay", "Never-worked", "?"]
-MAXFNLWGT = 1_000_000
+MAXFNLWGT = 1000000
 EDUCATION = ["Bachelors", "Some-college", "11th", "HS-grad", "Prof-school", "Assoc-acdm", "Assoc-voc", "9th", "7th-8th", "12th", "Masters", "1st-4th", "10th", "Doctorate", "5th-6th", "Preschool", "?"]
 MAXEDUCATIONNUM = 16
 MARITALSTATUS = ["Married-civ-spouse", "Divorced", "Never-married", "Separated", "Widowed", "Married-spouse-absent", "Married-AF-spouse", "?"]
@@ -51,8 +51,14 @@ def readData(filename):
     with open(filename, "r") as f:
         data_string = f.read()
     data_string = data_string.splitlines()
-    data = map(formatRow, map(lambda x: x.split(","), data_string))
+    "print(data_string[0])"
 
+    data = map(formatRow, map(lambda x: x.split(","), data_string))
+    """
+    print(len(list(data)[0][0]))
+    print(list(data)[0])
+    return
+    """
     data, labels = zip(*data)
 
     return data, labels

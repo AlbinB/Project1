@@ -17,20 +17,44 @@ test_data, test_labels = dataUtils.readData("project1testdata.csv")
 
 
 # Build tensorflow blueprint
+
 ## Tensorflow placeholder
-input_placeholder = None # replace with your code
+input_placeholder = tf.placeholder(tf.float32, shape=[None, 113])
+
 ## Neural network hidden layers
 
+###Long Way
+"""
+weight1 = tf.get_variable("weight1", shape=[113, 226], initializer=tf.contrib.layers.xavier_initializer())
+bias1 = tf.get_variable("bias1", shape=[226], initializer=tf.contrib.layers.xavier_initializer())
+hidden_layer1 = tf.nn.relu(tf.matmul(input_placeholder, weight1)+bias1)
 
-## Logit layer
-logits = None # replace with your code
+weight2 = tf.get_variable("weight2", shape=[226, 150], initializer=tf.contrib.layers.xavier_initializer())
+bias2 = tf.get_variable("bias2", shape=[150], initializer=tf.contrib.layers.xavier_initializer())
+hidden_layer2 = tf.nn.relu(tf.matmul(hidden_layer1, weight2)+bias2)
+
+weight3 = tf.get_variable("weight3", shape=[150, 100], initializer=tf.contrib.layers.xavier_initializer())
+bias3 = tf.get_variable("bias3", shape=[100], initializer=tf.contrib.layers.xavier_initializer())
+hidden_layer3 = tf.nn.relu(tf.matmul(hidden_layer2, weight3)+bias3)
+###
+"""
+
+###Short Way
+hidden_layer1 = tf.layers.dense(input_placeholder, 226, activation=tf.nn.relu)
+hidden_layer2 = tf.layers.dense(hidden_layer1, 150, activation=tf.nn.relu)
+hidden_layer3 = tf.layers.dense(hidden_layer2, 100, activation=tf.nn.relu)
+
+## Logit/Output layer
+logits = tf.nn.softmax(tf.layers.dense(hidden_layer3, 2, activation=None))
 
 
 ## label placeholder
-label_placeholder = None # replace with your code
+label_placeholder = tf.placeholder(tf.float32, shape=[None, 2])
 
 ## loss function
-loss = None # replace with your code
+loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=label_placeholder, logits=logits))
+
+
 ## backpropagation algorithm
 train = None # replace with your code
 

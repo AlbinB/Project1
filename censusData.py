@@ -52,18 +52,18 @@ logits = tf.nn.softmax(tf.layers.dense(hidden_layer3, 2, activation=None))
 label_placeholder = tf.placeholder(tf.float32, shape=[None, 2])
 
 ## loss function
-loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=label_placeholder, logits=logits))
+loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=label_placeholder, logits=logits))
 
 
 ## backpropagation algorithm
-train = None # replace with your code
+train = tf.train.AdamOptimizer(logits, label_placeholder)
 
 accuracy = dataUtils.accuracy(logits, label_placeholder)
 
 ## Make tensorflow session
 with tf.Session() as sess:
     ## Initialize variables
-    #sess.run(# your code)
+    sess.run(tf.global_variables_initializer())
 
 
     step_count = 0
@@ -73,13 +73,13 @@ with tf.Session() as sess:
         batch_training_data, batch_training_labels = dataUtils.getBatch(data=training_data, labels=training_labels, batch_size=100)
 
         # train network
-        #training_accuracy, training_loss, _ = sess.run(# your code)
+        training_accuracy, training_loss, _ = sess.run([logits, train])
 
         # every 10 steps check accuracy
         if step_count % 10 == 0:
             batch_test_data, batch_test_labels = dataUtils.getBatch(data=test_data, labels=test_labels,
                                                                             batch_size=100)
-            #test_accuracy, test_loss = sess.run(# your code)
+            test_accuracy, test_loss = sess.run([train])
 
             print("Step Count:{}".format(step_count))
             print("Training accuracy: {} loss: {}".format(training_accuracy, training_loss))

@@ -55,6 +55,10 @@ train = tf.train.AdamOptimizer().minimize(loss)
 
 accuracy = dataUtils.accuracy(logits, label_placeholder)
 
+
+# Add ops to save and restore all the variables.
+saver = tf.train.Saver()
+
 # Make tensorflow session
 with tf.Session() as sess:
     ## Initialize variables
@@ -64,7 +68,10 @@ with tf.Session() as sess:
     while True:
         step_count += 1
 
-        batch_training_data, batch_training_labels = dataUtils.getBatch(data=training_data, labels=training_labels, batch_size=150)
+        batch_training_data, batch_training_labels = \
+            dataUtils.getBatch(data=training_data,
+                               labels=training_labels,
+                               batch_size=150)
 
         # train network
         training_accuracy, training_loss, logits_output, _ = \
@@ -75,7 +82,11 @@ with tf.Session() as sess:
 
         # every 100 steps check accuracy
         if step_count % 100 == 0:
-            batch_test_data, batch_test_labels = dataUtils.getBatch(data=test_data, labels=test_labels, batch_size=150)
+            batch_test_data, batch_test_labels = \
+                dataUtils.getBatch(data=test_data,
+                                   labels=test_labels,
+                                   batch_size=150)
+
             test_accuracy, test_loss, logits_output, _ = \
             sess.run([accuracy, loss, logits, train],
                      feed_dict={input_placeholder: batch_test_data,
@@ -89,5 +100,6 @@ with tf.Session() as sess:
 
         # stop training after 1,000 steps
         if step_count > 1000:
+            save_path = saver.save(sess, "/Users/albin/DevProject/Project1/model.ckpt")
+            print("Model saved in path: %s" % save_path)
             break
-

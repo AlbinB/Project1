@@ -36,12 +36,19 @@ hidden_layer3 = tf.nn.relu(tf.matmul(hidden_layer2, weight3)+bias3)
 ###
 """
 ###Short Way
-hidden_layer1 = tf.nn.dropout(tf.layers.dense(input_placeholder, 226, activation=tf.nn.relu),keep_prob=0.5)
-hidden_layer2 = tf.nn.dropout(tf.layers.dense(hidden_layer1, 226, activation=tf.nn.relu),keep_prob=0.5)
-hidden_layer3 = tf.nn.dropout(tf.layers.dense(hidden_layer2, 113, activation=tf.nn.relu),keep_prob=0.5)
+hidden_layer1 = tf.nn.dropout(tf.layers.dense(tf.layers.batch_normalization(input_placeholder, training=True),
+                                              113, activation=tf.nn.relu), keep_prob=0.9)
+hidden_layer2 = tf.nn.dropout(tf.layers.dense(tf.layers.batch_normalization(hidden_layer1, training=True),
+                                              226, activation=tf.nn.relu), keep_prob=0.9)
+hidden_layer3 = tf.nn.dropout(tf.layers.dense(tf.layers.batch_normalization(hidden_layer2, training=True),
+                                              226, activation=tf.nn.relu), keep_prob=0.9)
+hidden_layer4 = tf.nn.dropout(tf.layers.dense(tf.layers.batch_normalization(hidden_layer3, training=True),
+                                              113, activation=tf.nn.relu), keep_prob=0.9)
+hidden_layer5 = tf.nn.dropout(tf.layers.dense(tf.layers.batch_normalization(hidden_layer4, training=True),
+                                              60, activation=tf.nn.relu), keep_prob=0.9)
 
 # Logit/Output layer
-logits = tf.nn.softmax(tf.layers.dense(hidden_layer3, 2, activation=None))
+logits = tf.nn.softmax(tf.layers.dense(hidden_layer4, 2, activation=None))
 
 
 # label placeholder
@@ -71,7 +78,7 @@ with tf.Session() as sess:
         batch_training_data, batch_training_labels = \
             dataUtils.getBatch(data=training_data,
                                labels=training_labels,
-                               batch_size=150)
+                               batch_size=200)
 
         # train network
         training_accuracy, training_loss, logits_output, _ = \
@@ -85,7 +92,7 @@ with tf.Session() as sess:
             batch_test_data, batch_test_labels = \
                 dataUtils.getBatch(data=test_data,
                                    labels=test_labels,
-                                   batch_size=150)
+                                   batch_size=200)
 
             test_accuracy, test_loss, logits_output, _ = \
             sess.run([accuracy, loss, logits, train],
@@ -94,12 +101,12 @@ with tf.Session() as sess:
 
             print("Logist {}". format(logits_output))
             print("Step Count:{}".format(step_count))
-            print("Training accuracy: {} loss: {}".format(training_accuracy, training_loss))
-            print("Test accuracy: {} loss: {}".format(test_accuracy, test_loss))
+            print("Training accuracy: {} Training loss: {}".format(training_accuracy, training_loss))
+            print("Test accuracy: {} Test loss: {}".format(test_accuracy, test_loss))
 
 
         # stop training after 1,000 steps
-        if step_count > 1000:
-            save_path = saver.save(sess, "/Users/albin/DevProject/Project1/model.ckpt")
+        if step_count > 2000:
+            save_path = saver.save(sess, "/Users/albin/DevProject/Project1/models/model.ckpt")
             print("Model saved in path: %s" % save_path)
             break

@@ -63,6 +63,10 @@ train = tf.train.AdamOptimizer().minimize(loss)
 
 accuracy = dataUtils.accuracy(logits, label_placeholder)
 
+# summaries
+tf.summary.scalar('accuracy', accuracy)
+tf.summary.scalar('loss', loss)
+merged = tf.summary.merge_all()
 
 # Add ops to save and restore all the variables.
 saver = tf.train.Saver()
@@ -72,7 +76,7 @@ with tf.Session() as sess:
     ## Initialize variables
     sess.run(tf.global_variables_initializer())
     # Add writer
-    writer = tf.summary.FileWriter("/Users/albin/DevProject/Project1/graph/1", sess.graph)
+    summary_writer = tf.summary.FileWriter("/Users/albin/DevProject/Project1/graph/1", sess.graph)
     step_count = 0
     while True:
         step_count += 1
@@ -96,13 +100,16 @@ with tf.Session() as sess:
                                    labels=test_labels,
                                    batch_size=500)
 
-            test_accuracy, test_loss, logits_output, _ = \
-            sess.run([accuracy, loss, logits, train],
+            test_accuracy, test_loss, logits_output, _, summary_merged, = \
+                sess.run([accuracy, loss, logits, train, merged],
                      feed_dict={input_placeholder: batch_test_data,
                                 label_placeholder: batch_test_labels})
 
             # save model
-            save_path = saver.save(sess, "/Users/albin/DevProject/Project1/models/model.ckpt".format(step_count))
+            save_path = saver.save(sess, "/Users/albin/DevProject/Project1/models/model{}.ckpt".format(step_count))
+
+            # write summary
+            summary_writer.add_summary(summary_merged, step_count)
 
             print("Logist {}". format(logits_output))
             print("Step Count:{}".format(step_count))

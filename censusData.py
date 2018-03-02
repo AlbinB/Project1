@@ -101,15 +101,16 @@ with tf.Session() as sess:
                      feed_dict={input_placeholder: batch_test_data,
                                 label_placeholder: batch_test_labels})
 
+            # save model
+            save_path = saver.save(sess, "/Users/albin/DevProject/Project1/models/model.ckpt".format(step_count))
+
             print("Logist {}". format(logits_output))
             print("Step Count:{}".format(step_count))
             print("Training accuracy: {} Training loss: {}".format(training_accuracy, training_loss))
             print("Test accuracy: {} Test loss: {}".format(test_accuracy, test_loss))
 
-
         # stop training after 1,000 steps
         if step_count > 1000:
             # writer.add_graph(sess.graph)
-            save_path = saver.save(sess, "/Users/albin/DevProject/Project1/models/model.ckpt")
             print("Model saved in path: %s" % save_path)
             break

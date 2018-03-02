@@ -1,0 +1,2 @@
+model_checkpoint_path: "/Users/albin/DevProject/Project1/models/model.ckpt"
+all_model_checkpoint_paths: "/Users/albin/DevProject/Project1/models/model.ckpt"

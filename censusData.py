@@ -12,6 +12,7 @@ play around with your model to try and get an even better score
 import tensorflow as tf
 import dataUtils
 
+
 training_data, training_labels = dataUtils.readData("project1trainingdata.csv")
 test_data, test_labels = dataUtils.readData("project1testdata.csv")
 
@@ -47,8 +48,8 @@ hidden_layer4 = tf.nn.dropout(tf.layers.dense(tf.layers.batch_normalization(hidd
 hidden_layer5 = tf.nn.dropout(tf.layers.dense(tf.layers.batch_normalization(hidden_layer4, training=True),
                                               60, activation=tf.nn.relu), keep_prob=0.9)
 
-# Logit/Output layer
-logits = tf.nn.softmax(tf.layers.dense(hidden_layer4, 2, activation=None))
+# logits/Output layer
+logits = tf.nn.softmax(tf.layers.dense(hidden_layer5, 2, activation=None))
 
 
 # label placeholder
@@ -70,7 +71,8 @@ saver = tf.train.Saver()
 with tf.Session() as sess:
     ## Initialize variables
     sess.run(tf.global_variables_initializer())
-
+    # Add writer
+    writer = tf.summary.FileWriter("/Users/albin/DevProject/Project1/graph/1", sess.graph)
     step_count = 0
     while True:
         step_count += 1
@@ -78,7 +80,7 @@ with tf.Session() as sess:
         batch_training_data, batch_training_labels = \
             dataUtils.getBatch(data=training_data,
                                labels=training_labels,
-                               batch_size=200)
+                               batch_size=500)
 
         # train network
         training_accuracy, training_loss, logits_output, _ = \
@@ -92,7 +94,7 @@ with tf.Session() as sess:
             batch_test_data, batch_test_labels = \
                 dataUtils.getBatch(data=test_data,
                                    labels=test_labels,
-                                   batch_size=200)
+                                   batch_size=500)
 
             test_accuracy, test_loss, logits_output, _ = \
             sess.run([accuracy, loss, logits, train],
@@ -106,7 +108,8 @@ with tf.Session() as sess:
 
 
         # stop training after 1,000 steps
-        if step_count > 2000:
+        if step_count > 1000:
+            # writer.add_graph(sess.graph)
             save_path = saver.save(sess, "/Users/albin/DevProject/Project1/models/model.ckpt")
             print("Model saved in path: %s" % save_path)
             break

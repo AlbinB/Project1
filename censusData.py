@@ -75,7 +75,7 @@ with tf.Session() as sess:
     ## Initialize variables
     sess.run(tf.global_variables_initializer())
     # Add writer
-    summary_writer = tf.summary.FileWriter("/tmp/graph/1", sess.graph)
+    summary_writer = tf.summary.FileWriter("/Users/albin/DevProjects/bbds_tensorflow_projects/Project1/logdir", sess.graph)
     step_count = 0
     while True:
         step_count += 1
@@ -116,7 +116,7 @@ with tf.Session() as sess:
             print("Test accuracy: {} Test loss: {}".format(test_accuracy, test_loss))
 
         # stop training after 1,000 steps
-        if step_count > 1000:
+        if step_count > 500:
             print("Model saved in path: %s" % save_path)
-            print("Tensorboard logs in /tmp/graph/1")
+            print("Tensorboard logs in /Users/albin/DevProjects/bbds_tensorflow_projects/Project1/logdir")
             break

@@ -16,6 +16,10 @@ import dataUtils
 training_data, training_labels = dataUtils.readData("project1trainingdata.csv")
 test_data, test_labels = dataUtils.readData("project1testdata.csv")
 
+# label placeholder
+label_placeholder = tf.placeholder(tf.float32, shape=[None, 2])
+
+
 # Tensorflow placeholder
 input_placeholder = tf.placeholder(tf.float32, shape=[None, 113])
 
@@ -51,16 +55,11 @@ hidden_layer5 = tf.nn.dropout(tf.layers.dense(tf.layers.batch_normalization(hidd
 # logits/Output layer
 logits = tf.nn.softmax(tf.layers.dense(hidden_layer5, 2, activation=None))
 
-
-# label placeholder
-label_placeholder = tf.placeholder(tf.float32, shape=[None, 2])
-
 # loss function
 loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=label_placeholder, logits=logits))
 
-# backpropagation algorithm
+# back-propagation algorithm
 train = tf.train.AdamOptimizer().minimize(loss)
-
 accuracy = dataUtils.accuracy(logits, label_placeholder)
 
 # summaries
@@ -76,7 +75,7 @@ with tf.Session() as sess:
     ## Initialize variables
     sess.run(tf.global_variables_initializer())
     # Add writer
-    summary_writer = tf.summary.FileWriter("/Users/albin/DevProject/Project1/graph/1", sess.graph)
+    summary_writer = tf.summary.FileWriter("/tmp/graph/1", sess.graph)
     step_count = 0
     while True:
         step_count += 1
@@ -108,7 +107,7 @@ with tf.Session() as sess:
             # save model
             save_path = saver.save(sess, "/Users/albin/DevProject/Project1/models/model{}.ckpt".format(step_count))
 
-            # write summary
+            # save summary
             summary_writer.add_summary(summary_merged, step_count)
 
             print("Logist {}". format(logits_output))
@@ -118,6 +117,5 @@ with tf.Session() as sess:
 
         # stop training after 1,000 steps
         if step_count > 1000:
-            # writer.add_graph(sess.graph)
             print("Model saved in path: %s" % save_path)
             break

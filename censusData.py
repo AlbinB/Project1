@@ -118,4 +118,5 @@ with tf.Session() as sess:
         # stop training after 1,000 steps
         if step_count > 1000:
             print("Model saved in path: %s" % save_path)
+            print("Tensorboard logs in /tmp/graph/1")
             break
